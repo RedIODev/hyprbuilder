@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Available options:
+# <skip-download> -skips the download part of the script. This can be useful if the script failed and the downloaded files can be reused after fixing a problem.
+# <gui-workaround> -adds include paths that are currently missing for hyprland-guiutils. The paths are x86 specific.
+
+
 # Reset
 Color_Off='\033[0m'       # Text Reset
 
