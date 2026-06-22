@@ -79,7 +79,15 @@ cd ./hyprland-rebuild
 
 repos="hyprutils hyprwayland-scanner hyprlang aquamarine hyprgraphics hyprcursor hyprtoolkit hyprland-guiutils hyprland-qt-support hyprwire"
 
-if [[ $1 != "skip-download" ]]; then
+if [[ $* = "gui-workaround"]]
+	workaround="-I/usr/include/pango-1.0 -I/usr/include/glib-2.0/ -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/ -I/usr/include/harfbuzz/"
+else
+	workaround=""
+fi
+
+if [[ $* = "skip-download" ]]; then
+
+else #skip-download
 
 echo -e "[${Cyan}info${Color_Off}] Downloading repos."
 
@@ -108,7 +116,7 @@ read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][e
 for repo in $repos; do
 	cd ./$repo/
 	echo -e "[${Cyan}info${Color_Off}] Creating build files for ${repo}."
-	if cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_CXX_FLAGS="-I/usr/include/pango-1.0 -I/usr/include/glib-2.0/ -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/ -I/usr/include/harfbuzz/" -S . -B ./build; then
+	if cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_CXX_FLAGS=$workaround -S . -B ./build; then
 		echo -e "[${Green}Success${Color_Off}] Created build files for ${repo}."
 	else
 		echo -e "[${Red}Failed${Color_Off}] Failed to create build files for ${repo}."
