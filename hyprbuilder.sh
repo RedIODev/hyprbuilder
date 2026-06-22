@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#
-# Credit for color bindings: https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
-# 
-
 # Reset
 Color_Off='\033[0m'       # Text Reset
 
@@ -78,12 +74,12 @@ On_ICyan='\033[0;106m'    # Cyan
 On_IWhite='\033[0;107m'   # White
 
 
-
-
-
 mkdir ./hyprland-rebuild
 cd ./hyprland-rebuild
 
+repos="hyprutils hyprwayland-scanner hyprlang aquamarine hyprgraphics hyprcursor hyprtoolkit hyprland-guiutils hyprland-qt-support hyprwire"
+
+if [[ $1 != "skip-download" ]]; then
 
 echo -e "[${Cyan}info${Color_Off}] Downloading repos."
 
@@ -94,8 +90,6 @@ else
 	exit 1
 fi
 
-repos="hyprutils hyprwayland-scanner hyprlang aquamarine hyprgraphics hyprcursor hyprtoolkit hyprland-guiutils hyprland-qt-support hyprwire"
-
 for repo in $repos; do
 	if git clone https://github.com/hyprwm/$repo; then
 		echo -e "[${Green}Success${Color_Off}] Cloned ${repo}."
@@ -105,13 +99,16 @@ for repo in $repos; do
 	fi
 done
 echo -e "[${Cyan}info${Color_Off}] Done downloading repos."
+
+fi #skip-download
+
 echo -e "[${Cyan}info${Color_Off}] Installing dependencies."
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 for repo in $repos; do
 	cd ./$repo/
 	echo -e "[${Cyan}info${Color_Off}] Creating build files for ${repo}."
-	if cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=/usr -S . -B ./build; then
+	if cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_CXX_FLAGS="-I/usr/include/pango-1.0 -I/usr/include/glib-2.0/ -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/ -I/usr/include/harfbuzz/" -S . -B ./build; then
 		echo -e "[${Green}Success${Color_Off}] Created build files for ${repo}."
 	else
 		echo -e "[${Red}Failed${Color_Off}] Failed to create build files for ${repo}."
